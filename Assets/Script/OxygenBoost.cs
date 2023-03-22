@@ -5,12 +5,16 @@ using UnityEngine;
 public class OxygenBoost : MonoBehaviour
 {
     public bool isInject = false;
-    
     public float speed = 100f;
     public float injectionAmount = 0.1f;
     public GameObject oxygenParticle;
     public float randomSeed = 0f;
     public GameObject childRenderer;
+    public GameObject injectPoint;
+
+    public float movePower = 10f;
+    public float rotationPower = 10f;
+    public int injectWay = 1;
 
     // Update is called once per frame
     void Update()
@@ -38,13 +42,17 @@ public class OxygenBoost : MonoBehaviour
 
             if(IsMousePointerOnLeft(transform.up,mPosition))
             {
-                Debug.Log("마우스가 오른쪽에 있음");
-                GetComponent<SpriteRenderer>().flipY = !GetComponent<SpriteRenderer>().flipY;
-
+                Debug.Log("마우스가 왼쪽에 있음");
+                injectWay = 1;
+                childRenderer.transform.localScale = new Vector3(-1,1,1);
+                injectPoint.transform.localScale = new Vector3(-1,1,1);
             }
             else
             {
-                Debug.Log("마우스가 왼쪽에 있음");
+                Debug.Log("마우스가 오른쪽에 있음");
+                injectWay = -1;
+                childRenderer.transform.localScale = new Vector3(1,1,1);
+                injectPoint.transform.localScale = new Vector3(1,1,1);
             }
         }
 
@@ -69,8 +77,9 @@ public class OxygenBoost : MonoBehaviour
             main.startLifetime = 3 * injectionAmount;
         }
 
-        injectionMovement();
+        //injectionMovement();
         limtit_InjectionAmount();
+        setInjectPoint();
     }
 
     /// <summary>
@@ -162,5 +171,30 @@ public class OxygenBoost : MonoBehaviour
     private void limtit_InjectionAmount()
     {
         injectionAmount = Mathf.Clamp(injectionAmount,0f,1f);
+    }
+
+    private void  setInjectPoint()
+    {
+
+        Vector3 mousePosition = Input.mousePosition;
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        Vector3 texturePosition = transform.InverseTransformPoint(worldPosition);
+
+        float x = texturePosition.x / (GetComponent<SpriteRenderer>().bounds.size.x / 2);
+        float y = texturePosition.y / (GetComponent<SpriteRenderer>().bounds.size.y / 2);
+
+        x = Mathf.Clamp(x,-1f,1f);
+        y = Mathf.Clamp(y,-1f,1f);
+
+        Vector2 normalizedTexturePosition = new Vector2(x, y);
+        injectPoint.transform.localPosition = new Vector3(0,y,0);
+        // Debug.Log(normalizedTexturePosition);
+        
+        if(isInject)
+        {
+            GetComponent<Rigidbody2D>().AddTorque(rotationPower * -injectWay * injectPoint.transform.localPosition.y);
+            GetComponent<Rigidbody2D>().AddForce(movePower * transform.right * injectWay * injectionAmount);
+        }
+        
     }
 }
