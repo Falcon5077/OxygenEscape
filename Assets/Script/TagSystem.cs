@@ -7,34 +7,47 @@ public class TagSystem : MonoBehaviour
     Rigidbody2D rb;
     public Charactor ch;
     public GameObject smoke;
+    public float exlposionPower = 10f;
+    public float explostionTorque = 10f;
+    public GameObject lastSmoke;    
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnCollisionEnter2D(Collision2D other) {
-        if(other.gameObject.GetComponent<Charactor>().isTagger == true){
-            ch.isTagger = true;
-            other.gameObject.GetComponent<Charactor>().isTagger = false;
-            oxygenExplosion();
+        if(other.transform.tag == "Player")
+        {
+            if(ch.canChangeTagger == true && ch.isTagger == true){
+                GameObject smokeEffect = Instantiate(smoke);
+                smokeEffect.transform.position = other.contacts[0].point;
+                Destroy(smokeEffect, 1);
+
+                Debug.Log("New Tagger : " + other.gameObject.name );
+
+                ch.isTagger = false;
+                other.gameObject.GetComponent<Charactor>().changeToTagger();
+            }
         }
     }
 
-    void oxygenExplosion(){
-        GameObject smokeEffect = Instantiate(smoke);
-        smokeEffect.transform.position = ch.transform.position;
-        Destroy(smokeEffect, 1);
-        Debug.Log("TAG!!!!!");
-        // rb.AddTorque(50, ForceMode2D.Force);
-        // Vector3 vector = Quaternion.AngleAxis(Random.Range(0, 360f), Vector3.forward) * Vector3.right;
-        rb.AddForce(new Vector3(Random.Range(0, 360f), Random.Range(0, 360f), Random.Range(0, 360f)) * 1, ForceMode2D.Impulse);
-        // rb.velocity = Vector2.up * 10;
+    private void OnTriggerEnter2D(Collider2D other) {
+        if(other.tag == "explosion")
+        {
+            if(lastSmoke == null || lastSmoke != other.gameObject)
+                lastSmoke = other.gameObject;
+                
+            oxygenExplosion(lastSmoke.transform.position);
+        }
+    }
+    void oxygenExplosion(Vector3 point){
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0;
+        
+        Vector3 way = transform.position - point;
+        
+        rb.AddForce(way.normalized * exlposionPower,ForceMode2D.Impulse);
+        rb.AddTorque(explostionTorque);
     }
 }

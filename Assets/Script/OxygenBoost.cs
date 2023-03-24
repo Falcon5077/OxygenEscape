@@ -37,15 +37,6 @@ public class OxygenBoost : MonoBehaviour
             transform.position += new Vector3(0.0f, 1.0f, 0.0f);
         }
 
-
-
-
-
-
-
-
-
-
         // 스태미너가 있을때만 분사가능
         if(ch.Stamina > 0){
             if (isInject)
