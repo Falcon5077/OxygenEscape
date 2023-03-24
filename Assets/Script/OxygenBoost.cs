@@ -12,7 +12,7 @@ public class OxygenBoost : MonoBehaviour
     public float randomSeed = 0f;
     public GameObject childRenderer;
     public GameObject injectPoint;
-    public Charactor ch;
+    public PlayerInfo ch;
 
     public float movePower = 10f;
     public float rotationPower = 10f;

@@ -287,6 +287,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTagger: 1
+  canChangeTagger: 1
   Oxygen: 1000
   Stamina: 100
   speed: 0
@@ -304,8 +305,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ch: {fileID: 249198060}
   smoke: {fileID: 6950827140763310605, guid: bde3ff251adf448428f21e35e5f95a00, type: 3}
-  exlposionPower: 10
-  explostionTorque: 10
+  exlposionPower: 30
+  explostionTorque: 200
   lastSmoke: {fileID: 0}
 --- !u!1 &284312760
 GameObject:
@@ -5252,6 +5253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTagger: 0
+  canChangeTagger: 1
   Oxygen: 1000
   Stamina: 100
   speed: 0
@@ -5398,8 +5400,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ch: {fileID: 819216957}
   smoke: {fileID: 6950827140763310605, guid: bde3ff251adf448428f21e35e5f95a00, type: 3}
-  exlposionPower: 10
-  explostionTorque: 10
+  exlposionPower: 30
+  explostionTorque: 200
   lastSmoke: {fileID: 0}
 --- !u!1 &987009674
 GameObject:
@@ -10513,8 +10515,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ch: {fileID: 1737694201}
   smoke: {fileID: 6950827140763310605, guid: bde3ff251adf448428f21e35e5f95a00, type: 3}
-  exlposionPower: 10
-  explostionTorque: 10
+  exlposionPower: 30
+  explostionTorque: 200
   lastSmoke: {fileID: 0}
 --- !u!114 &1737694201
 MonoBehaviour:
@@ -10529,6 +10531,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTagger: 0
+  canChangeTagger: 1
   Oxygen: 1000
   Stamina: 100
   speed: 0
