@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class OxygenBoost : MonoBehaviour
 {
+    Rigidbody2D rb;
     public bool isInject = false;
     public float speed = 100f;
     public float injectionAmount = 0.1f;
@@ -11,6 +12,7 @@ public class OxygenBoost : MonoBehaviour
     public float randomSeed = 0f;
     public GameObject childRenderer;
     public GameObject injectPoint;
+    public Charactor ch;
 
     public float movePower = 10f;
     public float rotationPower = 10f;
@@ -19,67 +21,109 @@ public class OxygenBoost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // float scroll = Input.GetAxis("Mouse ScrollWheel");
-        // Debug.Log(scroll);
-
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetKey(KeyCode.A)){
+            transform.position -= new Vector3(1.0f, 0.0f, 0.0f);
+        }
+        if (Input.GetKey(KeyCode.S))
         {
-            isInject = true;   
-            injectionAmount = 0.5f;
-            oxygenParticle.SetActive(true);
-            var main = oxygenParticle.GetComponent<ParticleSystem>().main;
-            main.startLifetime = 3 * injectionAmount;
+            transform.position -= new Vector3(0.0f, 1.0f, 0.0f);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            transform.position += new Vector3(1.0f, 0.0f, 0.0f);
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.position += new Vector3(0.0f, 1.0f, 0.0f);
+        }
 
-            Debug.Log("분사 중");
 
-            //먼저 계산을 위해 마우스와 게임 오브젝트의 현재의 좌표를 임시로 저장합니다.
-            Vector3 mPosition = Input.mousePosition; //마우스 좌표 저장
-            Vector3 oPosition = transform.position; //게임 오브젝트 좌표 저장
-            
-            //카메라가 앞면에서 뒤로 보고 있기 때문에, 마우스 position의 z축 정보에 
-            //게임 오브젝트와 카메라와의 z축의 차이를 입력시켜줘야 합니다.
-            mPosition.z = oPosition.z - Camera.main.transform.position.z; 
 
-            if(IsMousePointerOnLeft(transform.up,mPosition))
+
+
+
+
+
+
+
+        // 스태미너가 있을때만 분사가능
+        if(ch.Stamina > 0){
+            if (isInject)
             {
-                Debug.Log("마우스가 왼쪽에 있음");
-                injectWay = 1;
-                childRenderer.transform.localScale = new Vector3(-1,1,1);
-                injectPoint.transform.localScale = new Vector3(-1,1,1);
+                ch.Stamina -= 10f * Time.deltaTime;
             }
             else
             {
-                Debug.Log("마우스가 오른쪽에 있음");
-                injectWay = -1;
-                childRenderer.transform.localScale = new Vector3(1,1,1);
-                injectPoint.transform.localScale = new Vector3(1,1,1);
+                if (ch.Stamina <= 100)
+                {
+                    ch.Stamina += 10f * Time.deltaTime;
+                }
             }
-        }
+            // float scroll = Input.GetAxis("Mouse ScrollWheel");
+            // Debug.Log(scroll);
 
-        if(Input.GetMouseButtonUp(0))
-        {
-            isInject = false;
-            injectionAmount = 0f;
-            oxygenParticle.SetActive(false);
-            Debug.Log("분사 종료");
-        }
+            if (Input.GetMouseButtonDown(0))
+            {
+                isInject = true;
+                injectionAmount = 0.5f;
+                oxygenParticle.SetActive(true);
+                var main = oxygenParticle.GetComponent<ParticleSystem>().main;
+                main.startLifetime = 3 * injectionAmount;
 
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            injectionAmount += 0.1f;
-            var main = oxygenParticle.GetComponent<ParticleSystem>().main;
-            main.startLifetime = 3 * injectionAmount;
-        }
-        if(Input.GetKeyDown(KeyCode.D))
-        {
-            injectionAmount -= 0.1f;
-            var main = oxygenParticle.GetComponent<ParticleSystem>().main;
-            main.startLifetime = 3 * injectionAmount;
-        }
+                Debug.Log("분사 중");
 
-        //injectionMovement();
-        limtit_InjectionAmount();
-        setInjectPoint();
+
+                //먼저 계산을 위해 마우스와 게임 오브젝트의 현재의 좌표를 임시로 저장합니다.
+                Vector3 mPosition = Input.mousePosition; //마우스 좌표 저장
+                Vector3 oPosition = transform.position; //게임 오브젝트 좌표 저장
+
+                //카메라가 앞면에서 뒤로 보고 있기 때문에, 마우스 position의 z축 정보에 
+                //게임 오브젝트와 카메라와의 z축의 차이를 입력시켜줘야 합니다.
+                mPosition.z = oPosition.z - Camera.main.transform.position.z;
+
+                if (IsMousePointerOnLeft(transform.up, mPosition))
+                {
+                    Debug.Log("마우스가 왼쪽에 있음");
+                    injectWay = 1;
+                    childRenderer.transform.localScale = new Vector3(-1, 1, 1);
+                    injectPoint.transform.localScale = new Vector3(-1, 1, 1);
+                }
+                else
+                {
+                    Debug.Log("마우스가 오른쪽에 있음");
+                    injectWay = -1;
+                    childRenderer.transform.localScale = new Vector3(1, 1, 1);
+                    injectPoint.transform.localScale = new Vector3(1, 1, 1);
+                }
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                isInject = false;
+                injectionAmount = 0f;
+                oxygenParticle.SetActive(false);
+                Debug.Log("분사 종료");
+            }
+
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                injectionAmount += 0.1f;
+                var main = oxygenParticle.GetComponent<ParticleSystem>().main;
+                main.startLifetime = 3 * injectionAmount;
+            }
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                injectionAmount -= 0.1f;
+                var main = oxygenParticle.GetComponent<ParticleSystem>().main;
+                main.startLifetime = 3 * injectionAmount;
+            }
+
+            //injectionMovement();
+            limtit_InjectionAmount();
+            setInjectPoint();
+        } else {    // 스태미나 없을땐 스태미나 회복
+            ch.Stamina += 10f * Time.deltaTime;
+        }
     }
 
     /// <summary>
