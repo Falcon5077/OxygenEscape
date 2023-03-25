@@ -12,7 +12,7 @@ public class OxygenBoost : MonoBehaviour
     public float randomSeed = 0f;
     public GameObject childRenderer;
     public GameObject injectPoint;
-    public PlayerInfo ch;
+    public PlayerData ch;
 
     public float movePower = 10f;
     public float rotationPower = 10f;
@@ -21,22 +21,6 @@ public class OxygenBoost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(KeyCode.A)){
-            transform.position -= new Vector3(1.0f, 0.0f, 0.0f);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.position -= new Vector3(0.0f, 1.0f, 0.0f);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.position += new Vector3(1.0f, 0.0f, 0.0f);
-        }
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.position += new Vector3(0.0f, 1.0f, 0.0f);
-        }
-
         // 스태미너가 있을때만 분사가능
         if(ch.Stamina > 0){
             if (isInject)
@@ -63,7 +47,6 @@ public class OxygenBoost : MonoBehaviour
 
                 Debug.Log("분사 중");
 
-
                 //먼저 계산을 위해 마우스와 게임 오브젝트의 현재의 좌표를 임시로 저장합니다.
                 Vector3 mPosition = Input.mousePosition; //마우스 좌표 저장
                 Vector3 oPosition = transform.position; //게임 오브젝트 좌표 저장
@@ -77,14 +60,14 @@ public class OxygenBoost : MonoBehaviour
                     Debug.Log("마우스가 왼쪽에 있음");
                     injectWay = 1;
                     childRenderer.transform.localScale = new Vector3(-1, 1, 1);
-                    injectPoint.transform.localScale = new Vector3(-1, 1, 1);
+                    // injectPoint.transform.localScale = new Vector3(-1, 1, 1);
                 }
                 else
                 {
                     Debug.Log("마우스가 오른쪽에 있음");
                     injectWay = -1;
                     childRenderer.transform.localScale = new Vector3(1, 1, 1);
-                    injectPoint.transform.localScale = new Vector3(1, 1, 1);
+                    // injectPoint.transform.localScale = new Vector3(1, 1, 1);
                 }
             }
 
@@ -124,10 +107,6 @@ public class OxygenBoost : MonoBehaviour
     {
         //먼저 계산을 위해 마우스와 게임 오브젝트의 현재의 좌표를 임시로 저장합니다.
         Vector3 mPosition = Input.mousePosition; //마우스 좌표 저장
-
-        // 목표 지점 흔들흔들
-        mPosition += new Vector3(Random.Range(-randomSeed,randomSeed),Random.Range(-randomSeed,randomSeed),Random.Range(-randomSeed,randomSeed));
-
         Vector3 oPosition = transform.position; //게임 오브젝트 좌표 저장
         
         //카메라가 앞면에서 뒤로 보고 있기 때문에, 마우스 position의 z축 정보에 
@@ -138,50 +117,18 @@ public class OxygenBoost : MonoBehaviour
         //그래야, 위치를 찾아갈 수 있겠습니다.
         Vector3 target = Camera.main.ScreenToWorldPoint(mPosition);
         
-        if(isInject)
-        {
-            transform.Translate(Vector3.left * injectionAmount * 20 * Time.deltaTime,Space.Self);
-            //다음은 아크탄젠트(arctan, 역탄젠트)로 게임 오브젝트의 좌표와 마우스 포인트의 좌표를
-            //이용하여 각도를 구한 후, 오일러(Euler)회전 함수를 사용하여 게임 오브젝트를 회전시키기
-            //위해, 각 축의 거리차를 구한 후 오일러 회전함수에 적용시킵니다.
-    
-            //우선 각 축의 거리를 계산하여, dy, dx에 저장해 둡니다.
-            float dy = target.y - oPosition.y;
-            float dx = target.x - oPosition.x;
-    
-            //오릴러 회전 함수를 0에서 180 또는 0에서 -180의 각도를 입력 받는데 반하여
-            //(물론 270과 같은 값의 입력도 전혀 문제없습니다.) 아크탄젠트 Atan2()함수의 결과 값은 
-            //라디안 값(180도가 파이(3.141592654...)로)으로 출력되므로
-            //라디안 값을 각도로 변화하기 위해 Rad2Deg를 곱해주어야 각도가 됩니다.
-            float rotateDegree =  Mathf.Atan2(dy, dx)*Mathf.Rad2Deg;
-    
-            //구해진 각도를 오일러 회전 함수에 적용하여 z축을 기준으로 게임 오브젝트를 회전시킵니다.
-            transform.rotation = Quaternion.Euler (0f, 0f, rotateDegree);
-            childRenderer.transform.rotation = Quaternion.RotateTowards
-                (childRenderer.transform.rotation, Quaternion.Euler (0f, 0f, rotateDegree), injectionAmount * speed * Time.deltaTime);
-        }
+        //우선 각 축의 거리를 계산하여, dy, dx에 저장해 둡니다.
+        float dy = target.y - oPosition.y;
+        float dx = target.x - oPosition.x;
 
-        // if(-90 < transform.rotation.eulerAngles.z && transform.rotation.eulerAngles.z < 90)
-        // {
-        //     GetComponent<SpriteRenderer>().flipY = false;
-        // }
-        // else
-        // {
-        //     GetComponent<SpriteRenderer>().flipY = true;
-        // }
-        
-        // if(IsMousePointerOnLeft(transform.up,mPosition))
-        // {
-        //     Debug.Log("마우스가 오른쪽에 있음");
-        //     GetComponent<SpriteRenderer>().flipX = false;
-            
-        // }
-        // else
-        // {
-        //     Debug.Log("마우스가 왼쪽에 있음");
-        //     GetComponent<SpriteRenderer>().flipX = true;
-        // }
+        //오릴러 회전 함수를 0에서 180 또는 0에서 -180의 각도를 입력 받는데 반하여
+        //(물론 270과 같은 값의 입력도 전혀 문제없습니다.) 아크탄젠트 Atan2()함수의 결과 값은 
+        //라디안 값(180도가 파이(3.141592654...)로)으로 출력되므로
+        //라디안 값을 각도로 변화하기 위해 Rad2Deg를 곱해주어야 각도가 됩니다.
+        float rotateDegree =  Mathf.Atan2(dy, dx)*Mathf.Rad2Deg;
 
+        //구해진 각도를 오일러 회전 함수에 적용하여 z축을 기준으로 게임 오브젝트를 회전시킵니다.
+        injectPoint.transform.rotation = Quaternion.Euler (0f, 0f, rotateDegree);
     }
     public bool IsMousePointerOnLeft(Vector3 playerUpVector, Vector3 mousePosition)
     {
@@ -210,7 +157,7 @@ public class OxygenBoost : MonoBehaviour
 
     private void  setInjectPoint()
     {
-
+        injectionMovement();
         Vector3 mousePosition = Input.mousePosition;
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
         Vector3 texturePosition = transform.InverseTransformPoint(worldPosition);
@@ -223,12 +170,13 @@ public class OxygenBoost : MonoBehaviour
 
         Vector2 normalizedTexturePosition = new Vector2(x, y);
         injectPoint.transform.localPosition = new Vector3(0,y,0);
+        
         // Debug.Log(normalizedTexturePosition);
         
         if(isInject)
         {
             GetComponent<Rigidbody2D>().AddTorque(rotationPower * -injectWay * injectPoint.transform.localPosition.y);
-            GetComponent<Rigidbody2D>().AddForce(movePower * transform.right * injectWay * injectionAmount);
+            GetComponent<Rigidbody2D>().AddForce(movePower * -injectPoint.transform.right * injectionAmount);
         }
         
     }

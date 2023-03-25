@@ -5,7 +5,7 @@ using UnityEngine;
 public class TagSystem : MonoBehaviour
 {
     Rigidbody2D rb;
-    public PlayerInfo ch;
+    public PlayerData ch;
     public GameObject smoke;
     public float exlposionPower = 10f;
     public float explostionTorque = 10f;
@@ -27,7 +27,7 @@ public class TagSystem : MonoBehaviour
                 Debug.Log("New Tagger : " + other.gameObject.name );
 
                 ch.isTagger = false;
-                other.gameObject.GetComponent<PlayerInfo>().changeToTagger();
+                other.gameObject.GetComponent<PlayerData>().changeToTagger();
             }
         }
     }
@@ -41,6 +41,7 @@ public class TagSystem : MonoBehaviour
             oxygenExplosion(lastSmoke.transform.position);
         }
     }
+
     void oxygenExplosion(Vector3 point){
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0;

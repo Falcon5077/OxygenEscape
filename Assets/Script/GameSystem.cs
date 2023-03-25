@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GameSystem : MonoBehaviour
 {
-    private PlayerInfo[] cList;
-    public PlayerInfo ch;
+    private PlayerData[] cList;
+    public PlayerData ch;
     private int count;
     // Start is called before the first frame update
     void Start()

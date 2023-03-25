@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInfo : MonoBehaviour
+public class PlayerData : MonoBehaviour
 {
     public bool isTagger = false;
     public bool canChangeTagger = true;
