@@ -5,7 +5,7 @@ using UnityEngine;
 public class TagSystem : MonoBehaviour
 {
     Rigidbody2D rb;
-    public PlayerData ch;
+    public PlayerData pd;
     public GameObject smoke;
     public float exlposionPower = 10f;
     public float explostionTorque = 10f;
@@ -14,19 +14,20 @@ public class TagSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        pd = GetComponent<PlayerData>();
         rb = GetComponent<Rigidbody2D>();
     }
     void OnCollisionEnter2D(Collision2D other) {
         if(other.transform.tag == "Player")
         {
-            if(ch.canChangeTagger == true && ch.isTagger == true){
+            if(pd.canChangeTagger == true && pd.isTagger == true){
                 GameObject smokeEffect = Instantiate(smoke);
                 smokeEffect.transform.position = other.contacts[0].point;
                 Destroy(smokeEffect, 1);
 
                 Debug.Log("New Tagger : " + other.gameObject.name );
 
-                ch.isTagger = false;
+                pd.isTagger = false;
                 other.gameObject.GetComponent<PlayerData>().changeToTagger();
             }
         }

@@ -8,14 +8,18 @@ public class CameraFollow : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        TCPManager.instance.GetComponent<Canvas>().worldCamera = Camera.main;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 pos = target.transform.position;
-        pos.z = -10f;
-        transform.position = pos;
+        if(target != null)
+        {
+            Vector3 pos = target.transform.position;
+            pos.z = -10f;
+            transform.position = pos;
+        }
+        
     }
 }

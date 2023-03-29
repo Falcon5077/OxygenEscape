@@ -18,12 +18,11 @@ public class ObstacleSystem : MonoBehaviour
         if(rb.velocity.magnitude < 3){
             MovingNonGravity();
         }
-        
     }
 
     void MovingNonGravity(){
         Debug.Log("뎀프시롤!!!!!!!!!!!!!!!");
         rb.AddForce(new Vector3(Random.Range(-180f, 180f), Random.Range(-180f, 180f), 0) * 0.5f);
-        rb.AddTorque(10, ForceMode2D.Force);
+        rb.AddTorque(1, ForceMode2D.Force);
     }
 }

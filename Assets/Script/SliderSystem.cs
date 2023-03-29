@@ -13,9 +13,11 @@ public class SliderSystem : MonoBehaviour
        slHP = GetComponent<Slider>();
     }
  
- 
     void Update()
     {
+        if(pd == null)
+            return;
+
         if(gameObject.tag == "stamina"){
             slHP.value = pd.Stamina * 0.01f;
         } else if(gameObject.tag == "oxygen"){

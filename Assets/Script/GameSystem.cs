@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class GameSystem : MonoBehaviour
 {
+    public static GameSystem instance;
     private PlayerData[] cList;
-    public PlayerData ch;
+    public PlayerData pd;
     public GameObject spaceStation;
     public List<GameObject> spaceStations = new List<GameObject>();
     public int[] wasdX = {80, -80, 0, 0};
@@ -14,23 +15,20 @@ public class GameSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        initSpaceStation(7);
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    private void Awake() {
+        if(instance == null)
+            instance = this;
     }
 
     void breakdown(){
-        // int who = Random.Range(0, count - 1);
-        // cList[who].isTrue = false;
-        ch.isTagger = true;
+        if(pd != null)
+            pd.isTagger = true;
     }
 
-    void initSpaceStation(int count){
+    public void initSpaceStation(int count){
         for(int i = 0; i < count; i++){
             GameObject newStation = Instantiate(spaceStation);
             spaceStations.Add(newStation);
