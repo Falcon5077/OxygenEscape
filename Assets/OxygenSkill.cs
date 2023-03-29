@@ -10,21 +10,26 @@ public class OxygenSkill : MonoBehaviour
     public GameObject explosionSmoke;
     public float rotateDegree;
     public float distance = 15f;
+    ClientObject co;
     // Start is called before the first frame update
     void Start()
     {
-        
+        co = GetComponent<ClientObject>();
     }
-
+    
     // Update is called once per frame
     void Update()
     {
+        if(co.isMine == false)
+            return;
+            
         calcSpawnPos();
         
         if(Input.GetKeyDown(KeyCode.Q))
         {
             spawnBall();
         }
+
         if(Input.GetKeyDown(KeyCode.W))
         {
             spawnExplosion();
