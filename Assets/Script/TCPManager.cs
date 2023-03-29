@@ -216,6 +216,7 @@ public class TCPManager : MonoBehaviour
                     return null;
                 }
 
+                Debug.Log(len_int);
                 stream.ReadTimeout = 2000;
                 var data = new byte[len_int];
                 stream.Read(data, 0, len_int); // stream에 있던 바이트배열 내려서 새로 선언한 바이트배열에 넣기
@@ -241,13 +242,18 @@ public class TCPManager : MonoBehaviour
             yield break;;
         }
 
-        string length = str.Length.ToString();
+        byte[] data = Encoding.UTF8.GetBytes(str);
+ 
+        stream.Write(BitConverter.GetBytes(data.Length));
+        stream.Write(data);
 
-        byte[] len = Encoding.UTF8.GetBytes(length);
-        stream.Write(len,0,len.Length);
+        // string length = str.Length.ToString();
 
-        byte[] txt = Encoding.UTF8.GetBytes(str);
-        stream.Write(txt,0,txt.Length);
+        // byte[] len = Encoding.UTF8.GetBytes(length);
+        // stream.Write(len,0,len.Length);
+
+        // byte[] txt = Encoding.UTF8.GetBytes(str);
+        // stream.Write(txt,0,txt.Length);
 
         // Debug.Log("Send : " + Encoding.UTF8.GetString(txt, 0, str.Length).ToString());
     }
