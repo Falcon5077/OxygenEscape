@@ -129,10 +129,33 @@ public class SocketHandler : MonoBehaviour
             {
                 if(UserManager.instance != null)
                     UserManager.instance.loadGame();
+
+                if(MessageFromServer.instance != null)
+                {
+                    string msg = jsonObject.GetString("msg");
+                    MessageFromServer.instance.setMessageFromServer(msg);
+                }
+
+                // 5초 뒤 태거 갱신
+                SyncManager.instance.Invoke("getNewTagger",5f);
+            }
+            else if(type == "new_tagger")
+            {
+                if(MessageFromServer.instance != null)
+                {
+                    string name = jsonObject.GetString("name");
+                    MessageFromServer.instance.setMessageFromServer(name + " 술래가 되었습니다.");
+
+                    SyncManager.instance.setNewTagger(name);
+
+                    Debug.Log("+++ 술래 바뀜 : " + name);
+                }
+
             }
             else if(type == "user_list")
             {
                 JArray jsonArray = jsonObject.GetJArray("users");
+                SyncManager.instance.users.Clear();
 
                 for(int i = 0; i < jsonArray.Length; i++)
                 {
@@ -155,6 +178,35 @@ public class SocketHandler : MonoBehaviour
 
                 if(UserManager.instance != null)
                     UserManager.instance.recvChattingFromRoom(sender,msg);
+            }
+            else if(type == "set_tagger")
+            {
+                string target = jsonObject.GetString("newTagger");
+
+                if(SyncManager.instance != null)
+                    SyncManager.instance.setTagger(target);
+            }
+            else if(type == "change_tagger")
+            {
+                string _old = jsonObject.GetString("oldTagger");
+                string _new = jsonObject.GetString("newTagger");
+
+                float _x = jsonObject.GetFloat("x");
+                float _y = jsonObject.GetFloat("y");
+                float _effect_x = jsonObject.GetFloat("effect_x");
+                float _effect_y = jsonObject.GetFloat("effect_y");
+
+                if(SyncManager.instance != null)
+                    SyncManager.instance.syncTagger(_old,_new,_x,_y,_effect_x,_effect_y);
+
+                if(MessageFromServer.instance != null)
+                    MessageFromServer.instance.setMessageFromServer(_new + " 술래가 되었습니다.");
+            }
+            else if(type == "close_connection")
+            {
+                string _name = jsonObject.GetString("name");
+                if(SyncManager.instance != null)
+                    SyncManager.instance.removeUser(_name);
             }
 
             beforeLength = jsonAsString.Length;

@@ -8,7 +8,8 @@ public class CameraFollow : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        TCPManager.instance.GetComponent<Canvas>().worldCamera = Camera.main;
+        if(TCPManager.instance != null)
+            TCPManager.instance.GetComponent<Canvas>().worldCamera = Camera.main;
     }
 
     // Update is called once per frame

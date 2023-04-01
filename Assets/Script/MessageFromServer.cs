@@ -29,9 +29,9 @@ public class MessageFromServer : MonoBehaviour
         float t = 1.0f;
         while(t > 0)
         {
-            t = Time.deltaTime;
+            t -= Time.deltaTime;
             tmp.color = new Color(1,1,1,t);
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(Time.deltaTime);
         }
     }
 

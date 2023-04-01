@@ -22,7 +22,7 @@ public class TCPManager : MonoBehaviour
     TcpClient client;    
     byte[] receivedBuffer;
     StreamReader reader;
-    bool socketReady = false;
+    static bool socketReady = false;
     NetworkStream stream;
 
     public static TCPManager instance;
@@ -30,7 +30,7 @@ public class TCPManager : MonoBehaviour
     public Queue<byte[]> packetQueue = new Queue<byte[]>();
 
 
-    void Awake()
+    void Start()
     {
         var obj = FindObjectsOfType<TCPManager>();
 
@@ -41,7 +41,8 @@ public class TCPManager : MonoBehaviour
         else
             Destroy(this.gameObject);
 
-        instance = this;
+        if(instance == null)
+            instance = this;
         
         StartCoroutine("CheckReceive");
         // StartCoroutine("Debugger");

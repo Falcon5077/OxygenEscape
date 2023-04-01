@@ -15,6 +15,9 @@ public class ClientObject : MonoBehaviour
 
     public void setMine()
     {
+        isMine = true;
+        Camera.main.GetComponent<CameraFollow>().target = this.gameObject;
+        SliderSystem.instance.pd = GetComponent<PlayerData>();
         Invoke("delaySetMine",1f);
     }
 
@@ -22,9 +25,6 @@ public class ClientObject : MonoBehaviour
     {
         GetComponent<OxygenBoost>().isMine = true;
         GetComponent<OxygenBoost>().StartCoroutine("sendPacket");
-        
-        isMine = true;
-        Camera.main.GetComponent<CameraFollow>().target = this.gameObject;
 
         GameSystem.instance.initSpaceStation(7);   
         UserManager.instance.myObject = this.gameObject;

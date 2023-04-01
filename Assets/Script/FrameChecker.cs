@@ -12,7 +12,7 @@ public class FrameChecker : MonoBehaviour
     string text;
     void Awake()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = 90;
 
         int w = Screen.width, h = Screen.height;
         rect = new Rect(0, 0, w, h * 4 / 100);
