@@ -5,12 +5,16 @@ using UnityEngine.UI;
 
 public class SliderSystem : MonoBehaviour
 {
-    Slider slHP;
+    public static SliderSystem instance;
+    public Slider staminaSlider;
+    public Slider oxygenSlider;
+    public Image oxygenFill;
     public PlayerData pd;
     float fSliderBarTime;
-    void Start()
+    void Awake()
     {
-       slHP = GetComponent<Slider>();
+        if(instance == null)
+            instance = this;
     }
  
     void Update()
@@ -18,15 +22,27 @@ public class SliderSystem : MonoBehaviour
         if(pd == null)
             return;
 
-        if(gameObject.tag == "stamina"){
-            slHP.value = pd.Stamina * 0.01f;
-        } else if(gameObject.tag == "oxygen"){
-            slHP.value = pd.Oxygen * 0.01f;
-        }
+        staminaSlider.value = pd.Stamina;
+        oxygenSlider.value = pd.Oxygen;
+
+        checkValue(staminaSlider);
+        checkValue(oxygenSlider);
         
-        if (slHP.value <= 0)
-            transform.Find("Fill Area").gameObject.SetActive(false);
+        if(pd.isTagger == true)
+        {
+            oxygenFill.color = Color.red;
+        }
         else
-            transform.Find("Fill Area").gameObject.SetActive(true);
+        {
+            oxygenFill.color = Color.green;
+        }
+    }
+
+    public void checkValue(Slider s)
+    {
+        if (s.value <= 0)
+            s.transform.Find("Fill Area").gameObject.SetActive(false);
+        else
+            s.transform.Find("Fill Area").gameObject.SetActive(true);
     }
 }

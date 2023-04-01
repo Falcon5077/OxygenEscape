@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OxygenSkill : MonoBehaviour
 {
@@ -10,20 +11,42 @@ public class OxygenSkill : MonoBehaviour
     public GameObject explosionSmoke;
     public float rotateDegree;
     public float distance = 15f;
+    public GameObject skillBtn;
+    public Image coolTimeImage;
+    public float maxCoolTime = 10f;
+    public float nowCoolTime = 0f;
+    public bool canSpawnBall = false;
     ClientObject co;
     // Start is called before the first frame update
     void Start()
     {
         co = GetComponent<ClientObject>();
+
+        if(co.isMine){
+            skillBtn = GameObject.Find("Skill1");
+            coolTimeImage = GameObject.Find("CoolTime").GetComponent<Image>();
+        }
+    }
+
+    public void calcCoolTime()
+    {
+        if(nowCoolTime > 0)
+            nowCoolTime -= Time.deltaTime;
+        else if(nowCoolTime <= 0)
+            nowCoolTime = 0;
+
+        coolTimeImage.fillAmount = nowCoolTime / maxCoolTime;
     }
     
     // Update is called once per frame
     void Update()
     {
+
         if(co.isMine == false)
             return;
             
         calcSpawnPos();
+        calcCoolTime();
         
         if(Input.GetKeyDown(KeyCode.Q))
         {
@@ -38,6 +61,10 @@ public class OxygenSkill : MonoBehaviour
 
     public void spawnExplosion()
     {
+        if(nowCoolTime > 0f)
+            return;
+
+        nowCoolTime = maxCoolTime;
         Vector3 way = new Vector2(radiusObject.transform.position.x,radiusObject.transform.position.y);
         way = transform.position - way;
         GetComponent<Rigidbody2D>().AddForce(way * 3,ForceMode2D.Impulse);

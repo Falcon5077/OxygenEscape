@@ -20,12 +20,13 @@ public class OxygenBoost : MonoBehaviour
     public int injectWay = 1;
     public float pre_y = 0f;
     public float rotateDegree;
-    Vector3 pos = Vector3.zero;
-    Vector3 rota = Vector3.zero;
+    public Vector3 pos = Vector3.zero;
+    public Vector3 rota = Vector3.zero;
     SpriteRenderer sr;
     public PlayerData pd;
     Rigidbody2D rb;
 
+    public float lerpSpeed = 10f;
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
         pd = GetComponent<PlayerData>();
@@ -43,9 +44,9 @@ public class OxygenBoost : MonoBehaviour
                 rb.velocity = Vector2.zero;
                 rb.angularVelocity = 0;
                 
-                transform.position = Vector3.Lerp(transform.position,pos,Time.deltaTime * 10);
-                transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.Euler(rota),Time.deltaTime * 10);
-                injectPoint.transform.rotation = Quaternion.Lerp(injectPoint.transform.rotation,Quaternion.Euler (0f, 0f, rotateDegree),Time.deltaTime * 5);
+                transform.position = Vector3.Lerp(transform.position,pos,Time.deltaTime * lerpSpeed);
+                transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.Euler(rota),Time.deltaTime * lerpSpeed);
+                injectPoint.transform.rotation = Quaternion.Lerp(injectPoint.transform.rotation,Quaternion.Euler (0f, 0f, rotateDegree),Time.deltaTime * lerpSpeed);
             }
             return;
         }
@@ -56,18 +57,27 @@ public class OxygenBoost : MonoBehaviour
             injectionAmount = 0f;
             oxygenParticle.SetActive(false);
         }
+
         // 스태미너가 있을때만 분사가능
         if(pd.Stamina > 0)
         {
             if (isInject)
             {
                 pd.Stamina -= 10f * Time.deltaTime;
+
+                if(pd.Stamina < 0)
+                {
+                    pd.Stamina = 0;
+                    isInject = false;
+                    injectionAmount = 0f;
+                    oxygenParticle.SetActive(false);
+                }
             }
             else
             {
                 if (pd.Stamina <= 100)
                 {
-                    pd.Stamina += 10f * Time.deltaTime;
+                    pd.Stamina += 7f * Time.deltaTime;
                 }
             }
 
@@ -118,7 +128,7 @@ public class OxygenBoost : MonoBehaviour
             setInjectPoint();
             clearPosition();
         } else {    // 스태미나 없을땐 스태미나 회복
-            pd.Stamina += 10f * Time.deltaTime;
+            pd.Stamina += 7f * Time.deltaTime;
         }
     }
 
@@ -241,7 +251,6 @@ public class OxygenBoost : MonoBehaviour
         float _injectionAmount = Mathf.Round(injectionAmount * 100) / 100;
         float _rotateDegree = Mathf.Round(rotateDegree * 100) / 100;
         
-
         JSON jsonObject = new JSON();
         jsonObject.Add("type","sync_position");
         jsonObject.Add("sender",transform.name);
