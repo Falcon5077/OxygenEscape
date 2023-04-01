@@ -81,6 +81,7 @@ public class OxygenBoost : MonoBehaviour
                 }
             }
 
+            // 산소 분출
             if (Input.GetMouseButtonDown(0))
             {
                 isInject = true;
@@ -129,6 +130,51 @@ public class OxygenBoost : MonoBehaviour
             clearPosition();
         } else {    // 스태미나 없을땐 스태미나 회복
             pd.Stamina += 7f * Time.deltaTime;
+        }
+
+
+
+        // 마우스 휠 분사 뿡붕뿡뿡
+        float wheelInput = Input.GetAxis("Mouse ScrollWheel");
+        if(wheelInput > 0){
+            injectionAmount += 0.01f;
+        } else if(wheelInput < 0){
+            injectionAmount -= 0.01f;
+        }
+
+        if (injectionAmount > 0)
+        {
+            isInject = true;
+            oxygenParticle.SetActive(true);
+            var main = oxygenParticle.GetComponent<ParticleSystem>().main;
+            main.startLifetime = 3 * injectionAmount;
+
+            Debug.Log("분사 중");
+
+            //먼저 계산을 위해 마우스와 게임 오브젝트의 현재의 좌표를 임시로 저장합니다.
+            Vector3 mPosition = Input.mousePosition; //마우스 좌표 저장
+            Vector3 oPosition = transform.position; //게임 오브젝트 좌표 저장
+
+            //카메라가 앞면에서 뒤로 보고 있기 때문에, 마우스 position의 z축 정보에 
+            //게임 오브젝트와 카메라와의 z축의 차이를 입력시켜줘야 합니다.
+            mPosition.z = oPosition.z - Camera.main.transform.position.z;
+
+            if (IsMousePointerOnLeft(transform.up, mPosition))
+            {
+                injectWay = 1;
+                childRenderer.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else
+            {
+                injectWay = -1;
+                childRenderer.transform.localScale = new Vector3(1, 1, 1);
+            }
+        }
+        else
+        {
+            isInject = false;
+            injectionAmount = 0f;
+            oxygenParticle.SetActive(false);
         }
     }
 
