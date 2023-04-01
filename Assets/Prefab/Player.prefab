@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 2}
+  m_AnchoredPosition: {x: 0, y: 5}
   m_SizeDelta: {x: 5, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &9034458219097892692
@@ -78,7 +78,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &7760832327640938032
 MonoBehaviour:
@@ -100,9 +100,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 96c4374d5114d451e9f49dec98288954, type: 2}
   m_sharedMaterial: {fileID: 1768009541878949288, guid: 96c4374d5114d451e9f49dec98288954, type: 2}
@@ -129,12 +127,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
+  m_fontSize: 20
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 4
-  m_fontSizeMax: 12
+  m_fontSizeMin: 10
+  m_fontSizeMax: 20
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -165,7 +163,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 3}
+  m_margin: {x: -5, y: -2, z: -5, w: 2}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   _SortingLayer: 0
@@ -247,7 +245,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: 879d5af77fef54d24b80d343bd519e93, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ccd4c63c9d3ab4d489c6f1d83614eec9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -274,13 +272,14 @@ GameObject:
   - component: {fileID: 8813053760713821266}
   - component: {fileID: 8813053760713821265}
   - component: {fileID: 5567433720671896141}
+  - component: {fileID: 1912222819200593221}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8813053760713821271
 Transform:
   m_ObjectHideFlags: 0
@@ -312,7 +311,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 2.5
+  m_Mass: 2
   m_LinearDrag: 1
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -328,7 +327,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8813053760713821273}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -362,7 +361,10 @@ MonoBehaviour:
   injectWay: 1
   pre_y: 0
   rotateDegree: 0
+  pos: {x: 0, y: 0, z: 0}
+  rota: {x: 0, y: 0, z: 0}
   pd: {fileID: 0}
+  lerpSpeed: 10
 --- !u!114 &8813053760713821267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -375,7 +377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36c1eae895fe98e40baaf6db5f7995de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isTagger: 1
+  isTagger: 0
   canChangeTagger: 1
   Oxygen: 1000
   Stamina: 100
@@ -415,6 +417,11 @@ MonoBehaviour:
   explosionSmoke: {fileID: 6950827140763310605, guid: 7e803e60c7763454ebe1cf1ed87c106e, type: 3}
   rotateDegree: 0
   distance: 15
+  skillBtn: {fileID: 0}
+  coolTimeImage: {fileID: 0}
+  maxCoolTime: 10
+  nowCoolTime: 0
+  canSpawnBall: 0
 --- !u!114 &5567433720671896141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,6 +436,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   userName: {fileID: 7760832327640938032}
   isMine: 0
+--- !u!70 &1912222819200593221
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8813053760713821273}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 4, y: 8}
+  m_Direction: 0
 --- !u!1 &8813053761284518040
 GameObject:
   m_ObjectHideFlags: 0
