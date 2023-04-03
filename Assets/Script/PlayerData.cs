@@ -16,6 +16,11 @@ public class PlayerData : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(isTagger){
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+        }
+        else
+            transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
         useOxygen();
     }
 
