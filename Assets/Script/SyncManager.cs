@@ -9,6 +9,7 @@ public class SyncManager : MonoBehaviour
     public GameObject playerPrefab;
     public List<GameObject> users = new List<GameObject>();
     public Vector3 spawnPos;
+    public bool isHost = false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -74,6 +75,11 @@ public class SyncManager : MonoBehaviour
                 users.RemoveAt(i);
                 users.TrimExcess();
             }
+        }
+
+        if(users.Count == 1)
+        {
+            users[0].GetComponent<PlayerData>().GameOver();
         }
     }
     public void setTagger(string target)

@@ -8,16 +8,19 @@ public class PlayerData : MonoBehaviour
 {
     public bool isTagger = false;
     public bool canChangeTagger = true;
-    public float Oxygen = 1000f;
+    public float Oxygen = 100f;
     public float Stamina = 100f;
     public float speed;
+    public ClientObject co;
 
     // Update is called once per frame
     void Update()
     {
         useOxygen();
+    }
 
-        
+    private void Awake() {
+        co = GetComponent<ClientObject>();
     }
 
     void useOxygen()
@@ -26,25 +29,45 @@ public class PlayerData : MonoBehaviour
             Oxygen -= 0.1f * Time.deltaTime;
         }
 
+        if(!co.isMine)
+            return;
+
+        if(isTagger)
+        {
+            // 술래인 시간 더하기
+            ResultSystem.instance.changeTaggerTimer += Time.deltaTime;
+        }
+        else if (!isTagger)
+        {
+            // 술래가 아닌 시간 더하기
+            ResultSystem.instance.noneTaggerTimer += Time.deltaTime;
+        }
+
         if(Oxygen < 0)
         {
             Oxygen = 0;
             Debug.Log("사망");
+
+            GameOver();
             
-            MessageFromServer.instance.setMessageFromServer(SyncManager.instance.users.Count + "등");
-            
-            JSON jsonObject = new JSON();
-            jsonObject.Add("type","destroy_user");
-            TCPManager.instance.SendMsg(jsonObject.CreateString());
-            SceneManager.LoadScene("Client");
-            UserManager.instance.leaveRoom();
-            // PannelController.instance.loadGameScene();
-            // PannelController.instance.matchingPannel.SetActive(true);
         }
+    }
+
+    public void GameOver()
+    {
+        ResultSystem.instance.setResultText(SyncManager.instance.users.Count.ToString());
+        
+        JSON jsonObject = new JSON();
+        jsonObject.Add("type","destroy_user");
+        TCPManager.instance.SendMsg(jsonObject.CreateString());
+        SceneManager.LoadScene("Client");
+        UserManager.instance.leaveRoom();
     }
 
     void waitDelay()
     {
+        ResultSystem.instance.getNoneBestTime();
+
         isTagger = true;
         canChangeTagger = true;
     }

@@ -26,7 +26,7 @@ public class ClientObject : MonoBehaviour
         GetComponent<OxygenBoost>().isMine = true;
         GetComponent<OxygenBoost>().StartCoroutine("sendPacket");
 
-        GameSystem.instance.initSpaceStation(7);   
+        // GameSystem.instance.initSpaceStation(7);   
         UserManager.instance.myObject = this.gameObject;
     }
 }

@@ -25,12 +25,14 @@ public class OxygenBoost : MonoBehaviour
     SpriteRenderer sr;
     public PlayerData pd;
     Rigidbody2D rb;
+    AudioSource _audioSource;
 
     public float lerpSpeed = 10f;
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
         pd = GetComponent<PlayerData>();
         sr = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
 
@@ -56,6 +58,8 @@ public class OxygenBoost : MonoBehaviour
             isInject = false;
             injectionAmount = 0f;
             oxygenParticle.SetActive(false);
+
+            _audioSource.Stop();
         }
 
         // 스태미너가 있을때만 분사가능
@@ -63,6 +67,8 @@ public class OxygenBoost : MonoBehaviour
         {
             if (isInject)
             {
+                _audioSource.pitch = 1 + injectionAmount;
+                ResultSystem.instance.oxygenTimer += Time.deltaTime;
                 pd.Stamina -= 10f * Time.deltaTime;
 
                 if(pd.Stamina < 0)
@@ -70,12 +76,13 @@ public class OxygenBoost : MonoBehaviour
                     pd.Stamina = 0;
                     isInject = false;
                     injectionAmount = 0f;
+                    _audioSource.Stop();
                     oxygenParticle.SetActive(false);
                 }
             }
             else
             {
-                if (pd.Stamina <= 100)
+                if (pd.Stamina <= 500)
                 {
                     pd.Stamina += 7f * Time.deltaTime;
                 }
@@ -90,6 +97,7 @@ public class OxygenBoost : MonoBehaviour
                 var main = oxygenParticle.GetComponent<ParticleSystem>().main;
                 main.startLifetime = 3 * injectionAmount;
 
+                _audioSource.Play();
                 Debug.Log("분사 중");
 
                 //먼저 계산을 위해 마우스와 게임 오브젝트의 현재의 좌표를 임시로 저장합니다.
@@ -137,13 +145,14 @@ public class OxygenBoost : MonoBehaviour
         // 마우스 휠 분사 뿡붕뿡뿡
         float wheelInput = Input.GetAxis("Mouse ScrollWheel");
         if(wheelInput > 0){
-            injectionAmount += 0.01f;
+            injectionAmount += 0.05f;
         } else if(wheelInput < 0){
-            injectionAmount -= 0.01f;
+            injectionAmount -= 0.05f;
         }
 
         if (injectionAmount > 0)
         {
+            if(!isInject) _audioSource.Play();
             isInject = true;
             oxygenParticle.SetActive(true);
             var main = oxygenParticle.GetComponent<ParticleSystem>().main;
@@ -172,6 +181,7 @@ public class OxygenBoost : MonoBehaviour
         }
         else
         {
+            if(isInject) _audioSource.Stop();
             isInject = false;
             injectionAmount = 0f;
             oxygenParticle.SetActive(false);

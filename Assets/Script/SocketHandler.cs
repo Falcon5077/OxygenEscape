@@ -44,6 +44,16 @@ public class SocketHandler : MonoBehaviour
                 
                 SyncManager.instance.syncPosition(target,isInject,x,y,z,injectWay,injectionAmount, injectPointY,rotateDegree);
             }
+            else if(type == "sync_obstacle")
+            {
+                string sender = jsonObject.GetString("sender");
+                float x = jsonObject.GetFloat("x");
+                float y = jsonObject.GetFloat("y");
+                float z = jsonObject.GetFloat("z");
+
+                if(ObstacleSpawner.instance != null)
+                    ObstacleSpawner.instance.syncObstacle(Int32.Parse(sender),x,y,z);
+            }
             else if(type == "false")
             {
                 if(LoadingAnim.instance != null)
@@ -81,6 +91,8 @@ public class SocketHandler : MonoBehaviour
             {
                 if(UserManager.instance != null)
                     UserManager.instance.generateChatMsg.setBtnActive(true);
+                    
+                SyncManager.instance.isHost = true;
             }
             else if(type == "leave_success")
             {
@@ -92,6 +104,8 @@ public class SocketHandler : MonoBehaviour
                     UserManager.instance.leaveRoom();
                 if(LoadingAnim.instance != null)
                     LoadingAnim.instance.stopLoading();
+
+                SyncManager.instance.isHost = false;
             }
             else if(type == "guest_enter")
             {

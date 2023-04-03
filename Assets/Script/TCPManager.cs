@@ -7,7 +7,8 @@ using System.Text;
 using System;
 using System.IO;
 using TMPro;
-using System.Threading;
+using Leguar.TotalJSON;
+using UnityEngine.SceneManagement;
 
 public class TCPManager : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class TCPManager : MonoBehaviour
     public static TCPManager instance;
     public bool canSend = false;
     public Queue<byte[]> packetQueue = new Queue<byte[]>();
+    public Queue<string> strQueue = new Queue<string>();
 
 
     void Start()
@@ -96,7 +98,24 @@ public class TCPManager : MonoBehaviour
 
     private void Update() {
         if (socketReady)
-        {
+        {    
+            if(canSend == true)
+            {
+                string packet = "";
+                lock (strQueue)
+                {
+                    if (strQueue.Count > 0)
+                    {
+                        packet = strQueue.Dequeue();
+                    }
+                }
+
+                if(packet != "")
+                {
+                    StartCoroutine("SendMsgRoutine",packet);
+                }
+            }  
+
             // 패킷을 받아 큐에 넣음
             string msg = ReadPacket();
         
@@ -133,8 +152,8 @@ public class TCPManager : MonoBehaviour
                 var len_byte = new byte[4];
                 stream.Read(len_byte, 0, 4);
                 
-                if (BitConverter.IsLittleEndian)
-                    Array.Reverse(len_byte);
+                // if (BitConverter.IsLittleEndian)
+                //     Array.Reverse(len_byte);
 
                 int len_int = BitConverter.ToInt32(len_byte,0);
 
@@ -204,11 +223,9 @@ public class TCPManager : MonoBehaviour
                 stream.ReadTimeout = 2000;
                 var len_byte = new byte[4];
                 stream.Read(len_byte, 0, 4);
-                
-                if (BitConverter.IsLittleEndian)
-                    Array.Reverse(len_byte);
 
                 int len_int = BitConverter.ToInt32(len_byte,0);
+                Debug.Log(len_int);
 
                 if(len_int > 300)
                 {
@@ -217,7 +234,6 @@ public class TCPManager : MonoBehaviour
                     return null;
                 }
 
-                Debug.Log(len_int);
                 stream.ReadTimeout = 2000;
                 var data = new byte[len_int];
                 stream.Read(data, 0, len_int); // stream에 있던 바이트배열 내려서 새로 선언한 바이트배열에 넣기
@@ -235,18 +251,30 @@ public class TCPManager : MonoBehaviour
 
     public IEnumerator SendMsgRoutine(string message)
     {
-       string str = message;
+        canSend = false;
+        string str = message;
 
         if(str == "quit")
         {
             CloseSocket();
+            canSend = true;
             yield break;;
         }
 
+        if(str.Length > 1000)
+        {
+            canSend = true;
+            yield break;
+        }
+            
+
         byte[] data = Encoding.UTF8.GetBytes(str);
- 
+
         stream.Write(BitConverter.GetBytes(data.Length));
         stream.Write(data);
+
+        canSend = true;
+
 
         // string length = str.Length.ToString();
 
@@ -259,14 +287,67 @@ public class TCPManager : MonoBehaviour
         // Debug.Log("Send : " + Encoding.UTF8.GetString(txt, 0, str.Length).ToString());
     }
 
-    public void SendMsg(string message = "")
+    public void SendMsges(string message)
     {
-        StartCoroutine("SendMsgRoutine",message);
+       string str = message;
+
+        if(str == "quit")
+        {
+            CloseSocket();
+            return;
+        }
+
+        if(str.Length > 1000)
+            return;
+
+        byte[] data = Encoding.UTF8.GetBytes(str);
+ 
+        stream.Write(BitConverter.GetBytes(data.Length));
+        stream.Write(data);
+    }
+
+    public void SendMsg(string message = "")
+    {        
+        lock (strQueue)
+        {
+            strQueue.Enqueue(message);
+        }
+
+        Debug.Log(strQueue.Count);
     }
 
     void OnApplicationQuit()
     {
+        // for(int i = 0; i < strQueue.Count; i++)
+        // { 
+        //     string packet = "";
+        //     lock (strQueue)
+        //     {
+        //         if (strQueue.Count > 0)
+        //         {
+        //             packet = strQueue.Dequeue();
+        //         }
+        //     }
+
+        //     if(packet != "")
+        //     {
+        //         SendMsges(packet);
+        //         // StartCoroutine("SendMsgRoutine",packet);
+        //     }
+        // }
+
         CloseSocket();
+    }
+
+    public void quitGame()
+    {
+        ResultSystem.instance.setResultText(SyncManager.instance.users.Count.ToString());
+        
+        JSON jsonObject = new JSON();
+        jsonObject.Add("type","destroy_user");
+        TCPManager.instance.SendMsg(jsonObject.CreateString());
+        SceneManager.LoadScene("Client");
+        UserManager.instance.leaveRoom();
     }
 
     void CloseSocket()

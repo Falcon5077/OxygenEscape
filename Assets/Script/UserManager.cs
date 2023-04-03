@@ -120,7 +120,7 @@ public class UserManager : MonoBehaviour
 
     public void loadGame()
     {
-        SceneManager.LoadScene("Game 1");
+        SceneManager.LoadScene("Game 2");
         
         if(PannelController.instance != null)
             PannelController.instance.loadGameScene();

@@ -25,7 +25,7 @@ public class TagSystem : MonoBehaviour
         if(other.transform.tag == "Player")
         {
             if(pd.canChangeTagger == true && pd.isTagger == true){
-                
+                ResultSystem.instance.getTaggerBestTime();
                 spawnExplosion(other.contacts[0].point);
                 
                 float x = Mathf.Round(transform.position.x * 100) / 100;
