@@ -10,7 +10,7 @@ public class massObject : MonoBehaviour
 
     void Start()
     {
-        Destroy(this.gameObject,1f);
+        Destroy(this.gameObject,0.5f);
     }
 
     void Update()

@@ -7,6 +7,7 @@ public class ClientObject : MonoBehaviour
 {
     public TextMeshPro userName;
     public bool isMine = false;
+    public GameObject ball;
 
     public void setUserName(string name)
     {

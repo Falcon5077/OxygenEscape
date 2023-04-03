@@ -225,12 +225,13 @@ public class TCPManager : MonoBehaviour
                 stream.Read(len_byte, 0, 4);
 
                 int len_int = BitConverter.ToInt32(len_byte,0);
-                Debug.Log(len_int);
+                
 
                 if(len_int > 300)
                 {
                     clearBuffer();
                     Debug.Log("오류나는 패킷은 너굴맨이 처리했다고");
+                    Debug.Log(len_int);
                     return null;
                 }
 
@@ -312,8 +313,6 @@ public class TCPManager : MonoBehaviour
         {
             strQueue.Enqueue(message);
         }
-
-        Debug.Log(strQueue.Count);
     }
 
     void OnApplicationQuit()
