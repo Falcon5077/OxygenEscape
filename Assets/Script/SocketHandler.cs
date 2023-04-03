@@ -107,6 +107,7 @@ public class SocketHandler : MonoBehaviour
                 if(PannelController.instance != null)
                 {
                     PannelController.instance.matchingPannel.SetActive(true);
+                    PannelController.instance.NickNamePannel.SetActive(false);
                     
                     if(UserManager.instance != null)
                         UserManager.instance.getUserCount();
