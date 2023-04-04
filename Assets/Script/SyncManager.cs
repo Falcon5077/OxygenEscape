@@ -8,6 +8,8 @@ public class SyncManager : MonoBehaviour
     public static SyncManager instance;
     public GameObject playerPrefab;
     public List<GameObject> users = new List<GameObject>();
+    public List<Vector3> spawnList= new List<Vector3>();
+
     public Vector3 spawnPos;
     public bool isHost = false;
     // Start is called before the first frame update
@@ -55,7 +57,7 @@ public class SyncManager : MonoBehaviour
 
     public GameObject spawnUser(string name,int index)
     {
-        spawnPos = new Vector3(10f * index ,5f,0);
+        spawnPos = spawnList[index];
         GameObject u = Instantiate(playerPrefab,spawnPos,Quaternion.identity);
         u.transform.name = name;
         u.GetComponent<ClientObject>().setUserName(name);

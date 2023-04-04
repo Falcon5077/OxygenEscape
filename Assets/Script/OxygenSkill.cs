@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Leguar.TotalJSON;
 
 public class OxygenSkill : MonoBehaviour
 {
@@ -16,12 +17,32 @@ public class OxygenSkill : MonoBehaviour
     public float maxCoolTime = 10f;
     public float nowCoolTime = 0f;
     public bool canSpawnBall = false;
+    public GameObject Rock;
+    public bool canShoot = true;
+    public bool isPickUp = false;
     ClientObject co;
+    
+    public GameObject ThrowSound;
+    public GameObject PickUpSound;
+
+    public void playSound(int index)
+    {
+        if(index == 0)
+        {
+            GameObject temp = Instantiate(PickUpSound);
+            Destroy(temp,0.5f);
+        }
+        else
+        {
+            GameObject temp = Instantiate(ThrowSound);
+            Destroy(temp,0.5f);
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
         co = GetComponent<ClientObject>();
-
+        Rock = GameObject.Find("Rock");
         if(co.isMine){
             skillBtn = GameObject.Find("Skill1");
             coolTimeImage = GameObject.Find("CoolTime").GetComponent<Image>();
@@ -38,10 +59,10 @@ public class OxygenSkill : MonoBehaviour
         coolTimeImage.fillAmount = nowCoolTime / maxCoolTime;
     }
     
+    public float time = 0f;
     // Update is called once per frame
     void Update()
     {
-
         if(co.isMine == false)
             return;
             
@@ -50,12 +71,65 @@ public class OxygenSkill : MonoBehaviour
         
         if(Input.GetKeyDown(KeyCode.Q))
         {
-            spawnBall();
+            if(!isPickUp)
+                checkDistance();
+            else
+                spawnBall();
         }
 
         if(Input.GetKeyDown(KeyCode.W))
         {
             spawnExplosion();
+        }
+
+        if(Input.GetKeyDown(KeyCode.E))
+            grabPlayer();
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            time += Time.deltaTime;
+            if (time > 0.5f)
+            {
+                time = 0f;
+                grabPlayer();
+            }
+        }
+        
+    }
+
+    public void grabPlayer()
+    {
+        GameObject ball = Instantiate(massBall,radiusObject.transform.position,Quaternion.Euler (0f, 0f, rotateDegree));
+        ball.GetComponent<massObject>().parent = this.gameObject;
+
+        JSON jsonObject = new JSON();
+        jsonObject.Add("type","sync_grab");
+        jsonObject.Add("x",radiusObject.transform.position.x);
+        jsonObject.Add("y",radiusObject.transform.position.y);
+        jsonObject.Add("z",rotateDegree);
+        jsonObject.Add("sender",transform.name);
+        TCPManager.instance.SendMsg(jsonObject.CreateString());
+    }
+    public void checkDistance()
+    {
+        playSound(0);
+        Rock = ObstacleSpawner.instance.getNear(transform.position);
+
+        if(Vector3.Distance(transform.position,Rock.transform.position) < 5f)
+        {
+            if(Rock.GetComponent<ObstacleSystem>().canGrab == true)
+            {
+                Rock.GetComponent<ObstacleSystem>().target = this.gameObject;
+                isPickUp = true;
+                // 그랩 동기화 날림
+                JSON jsonObject = new JSON();
+                jsonObject.Add("type","sync_obstacle");
+                jsonObject.Add("sender",transform.name);
+                jsonObject.Add("index",Rock.name);
+                jsonObject.Add("value",false);
+                TCPManager.instance.SendMsg(jsonObject.CreateString());
+                Debug.Log(Vector3.Distance(transform.position,Rock.transform.position));
+            }
         }
     }
 
@@ -67,7 +141,7 @@ public class OxygenSkill : MonoBehaviour
         nowCoolTime = maxCoolTime;
         Vector3 way = new Vector2(radiusObject.transform.position.x,radiusObject.transform.position.y);
         way = transform.position - way;
-        GetComponent<Rigidbody2D>().AddForce(way * 3,ForceMode2D.Impulse);
+        GetComponent<Rigidbody2D>().AddForce(way * 7,ForceMode2D.Impulse);
         GameObject smokeEffect = Instantiate(explosionSmoke,transform.position,Quaternion.identity);
         Destroy(smokeEffect, 1);
     }
@@ -104,8 +178,41 @@ public class OxygenSkill : MonoBehaviour
     }
     public void spawnBall()
     {
-        GameObject ball = Instantiate(massBall,radiusObject.transform.position,Quaternion.Euler (0f, 0f, rotateDegree));
-        ball.GetComponent<massObject>().parent = this.gameObject;
+        if(!canShoot)
+            return;
+
+        playSound(1);
+        isPickUp = false;
+
+        if(Rock.GetComponent<ObstacleSystem>().target == this.gameObject)
+        {
+            Rock.GetComponent<ObstacleSystem>().canGrab = true;    
+            Rock.GetComponent<ObstacleSystem>().target = null;
+
+
+            float angle = rotateDegree / Mathf.Rad2Deg;
+            Vector3 direction = new Vector3(Mathf.Cos(angle),Mathf.Sin(angle), 0);
+
+            Rock.transform.position = transform.position + direction * 7f;
+            Rock.transform.rotation = Quaternion.Euler(0,0,rotateDegree);
+            Rock.GetComponent<CapsuleCollider2D>().isTrigger = false;
+            Rock.GetComponent<Rigidbody2D>().AddForce(Rock.transform.right * 200,ForceMode2D.Impulse);
+
+
+            float x = Rock.transform.position.x;
+            float y = Rock.transform.position.y;
+            // 그랩 동기화 날림
+            JSON jsonObject = new JSON();
+            jsonObject.Add("type","sync_obstacle");
+            jsonObject.Add("sender",transform.name);
+            jsonObject.Add("index",Rock.name);
+            jsonObject.Add("value",true);
+            jsonObject.Add("x",x);
+            jsonObject.Add("y",y);
+            jsonObject.Add("rotateDegree",rotateDegree);
+            TCPManager.instance.SendMsg(jsonObject.CreateString());
+        }
+        
     }
 
 }

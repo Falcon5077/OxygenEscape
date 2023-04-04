@@ -69,7 +69,7 @@ public class OxygenBoost : MonoBehaviour
             {
                 _audioSource.pitch = 1 + injectionAmount;
                 ResultSystem.instance.oxygenTimer += Time.deltaTime;
-                pd.Stamina -= 10f * Time.deltaTime;
+                pd.Stamina -= (10f + (30 * injectionAmount)) * Time.deltaTime;
 
                 if(pd.Stamina < 0)
                 {
@@ -98,7 +98,7 @@ public class OxygenBoost : MonoBehaviour
                 main.startLifetime = 3 * injectionAmount;
 
                 _audioSource.Play();
-                Debug.Log("분사 중");
+                // Debug.Log("분사 중");
 
                 //먼저 계산을 위해 마우스와 게임 오브젝트의 현재의 좌표를 임시로 저장합니다.
                 Vector3 mPosition = Input.mousePosition; //마우스 좌표 저장
@@ -158,7 +158,7 @@ public class OxygenBoost : MonoBehaviour
             var main = oxygenParticle.GetComponent<ParticleSystem>().main;
             main.startLifetime = 3 * injectionAmount;
 
-            Debug.Log("분사 중");
+            // Debug.Log("분사 중");
 
             //먼저 계산을 위해 마우스와 게임 오브젝트의 현재의 좌표를 임시로 저장합니다.
             Vector3 mPosition = Input.mousePosition; //마우스 좌표 저장

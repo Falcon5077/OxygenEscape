@@ -15,7 +15,7 @@ GameObject:
   m_Layer: 0
   m_Name: Ball
   m_TagString: Untagged
-  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cb8b1ecb1af4e009bb866d0fe09a5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  power: 20
+  power: 30
   target: {x: 0, y: 0, z: 0}
   parent: {fileID: 0}
 --- !u!50 &7532315592871589071

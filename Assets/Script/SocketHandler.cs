@@ -6,7 +6,7 @@ public class SocketHandler : MonoBehaviour
 {
     public int beforeLength = 0;
     public static SocketHandler instance;
-
+    public GameObject massBall;
     void Awake()
     {
         if(instance == null)
@@ -46,13 +46,52 @@ public class SocketHandler : MonoBehaviour
             }
             else if(type == "sync_obstacle")
             {
+                Debug.Log(jsonObject.CreateString());
                 string sender = jsonObject.GetString("sender");
+                string obj = jsonObject.GetString("index");
+                bool value = jsonObject.GetBool("value");
+                GameObject Rock = GameObject.Find(obj);
+
+                if(!value)
+                {
+                    GameObject player = GameObject.Find(sender);
+
+                    if(Rock != null && player != null)
+                    {
+                        Rock.GetComponent<ObstacleSystem>().canGrab = false;
+                        Rock.GetComponent<ObstacleSystem>().target = player;
+                    }
+                }
+                else
+                {
+                    float x = jsonObject.GetFloat("x");
+                    float y = jsonObject.GetFloat("y");
+                    float rotateDegree = jsonObject.GetFloat("rotateDegree");
+
+                    Rock.GetComponent<ObstacleSystem>().canGrab = true;    
+                    Rock.GetComponent<ObstacleSystem>().target = null;
+
+                    Rock.GetComponent<CapsuleCollider2D>().isTrigger = false;
+
+                    Rock.transform.position = new Vector3(x,y,0);
+                    Rock.transform.rotation = Quaternion.Euler(0,0,rotateDegree);
+                    Rock.GetComponent<Rigidbody2D>().AddForce(Rock.transform.right * 200,ForceMode2D.Impulse);
+                }
+
+                // if(ObstacleSpawner.instance != null)
+                //     ObstacleSpawner.instance.syncObstacle(Int32.Parse(sender),x,y,z);
+            }
+            else if(type == "sync_grab")
+            {
                 float x = jsonObject.GetFloat("x");
                 float y = jsonObject.GetFloat("y");
-                float z = jsonObject.GetFloat("z");
+                float rotateDegree = jsonObject.GetFloat("rotateDegree");
+                string sender = jsonObject.GetString("sender");
 
-                if(ObstacleSpawner.instance != null)
-                    ObstacleSpawner.instance.syncObstacle(Int32.Parse(sender),x,y,z);
+                GameObject player = GameObject.Find(sender);
+        
+                GameObject ball = Instantiate(massBall, new Vector3(x,y,0),Quaternion.Euler (0f, 0f, rotateDegree));
+                ball.GetComponent<massObject>().parent = player;
             }
             else if(type == "false")
             {
@@ -68,6 +107,7 @@ public class SocketHandler : MonoBehaviour
                 if(PannelController.instance != null)
                 {
                     PannelController.instance.matchingPannel.SetActive(true);
+                    PannelController.instance.NickNamePannel.SetActive(false);
                     
                     if(UserManager.instance != null)
                         UserManager.instance.getUserCount();

@@ -8,6 +8,7 @@ TagManager:
   - obstacle
   - stamina
   - oxygen
+  - wall
   layers:
   - Default
   - TransparentFX

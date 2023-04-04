@@ -8,6 +8,7 @@ public class PannelController : MonoBehaviour
     public GameObject gameSceneUI;
     public static PannelController instance;
     public GameObject matchingPannel;
+    public GameObject NickNamePannel;
     private void Awake() {
         if(instance == null)
             instance = this;
